@@ -1,0 +1,25 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{ comix.name }}</title>
+        <link rel="icon" type="image/png" href="{% static 'favicon.ico' %}" />
+    </head>
+    <body>
+        <div align="middle">
+            {% if user.is_authenticated %}
+                Вы уже авторизованы!
+            {% else %}
+                <form method='post'>
+                    {% csrf_token %}
+                    <label for="username">Логин    :</label>
+                    <input align="middle" type="text" name="username" value="" id='username'><br>
+                    <label for="password">Пароль :</label>
+                    <input align="middle" type="password" name="password" value="" id='password'><br>
+                    <input align="middle" type="submit" value="login" /><br>
+                </form>
+            {% endif %}
+        </div>
+    </body>
+</html>

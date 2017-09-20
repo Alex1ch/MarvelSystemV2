@@ -1,0 +1,68 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en" ng-app="SearchModel">
+    <head>
+    <meta charset="UTF-8">
+        <link rel="icon" type="image/png" href="{% static 'favicon.ico' %}" />
+        <link rel="stylesheet" href="{% static 'style.css' %}" />
+        <script type="text/javascript" src="{% static 'lib/angular.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'lib/angular-md5.js' %}"></script>
+        <script type="text/javascript" src="{% static 'SearchController.js' %}"></script>
+        <title>Поиск комиксов</title>
+    </head>
+    <body ng-controller="SearchCtrl">
+    <div class="searchform">
+        <div align="middle"><h4>
+        <a href="{% url 'marvel' %}">Поиск</a> -
+        {% if user.is_authenticated %}<a href="{% url 'master' %}">Комиксы {{ user.username }}</a> -
+        <a href="/logout/">Выйти из аккаунта</a>{% else %}
+          <a href="/auth/">Войти в аккаунт</a>
+        {% endif %}
+        </h4>
+    </div>
+        <br>
+        <form enctype="multipart/form-data" method="post" ng-submit="OnSubmit()" align="middle">
+            {% csrf_token %}
+            <label>Ключевые слова: </label><input type="text" maxlength="100" ng-model="keywords" id="keywords">
+            <input type="submit" value="Найти">
+            <button type="button" ng-click="Reset()">Сброс</button>
+        </form>
+    </div>
+    <div align="middle">
+    <div>Страница:<br></div>
+        <div>
+            <div ng-repeat="page in pages track by $index" style="float:left"><a href ng-click="ChangePage(page)"> - {[{page}]} -  </a> </div>
+        </div>
+    </div>
+    <br>
+    <br>
+    <div ng-repeat="object in Comics track by $index" class="results" align="middle">
+        <table>
+            <tr>
+                <td width="200">
+                    <img width="150" src="{[{ object.thumbnail.path }]}/detail.{[{object.thumbnail.extension}]}" >
+                </td>
+                <td width="800">
+                    <a href="/comic_view/{[{object.id}]}">{[{ object.title }]}</a><br><br>
+                    <div ng-if="object.description!=null">{[{ GetShort(object.description,400) }]}</div>
+                    <table>
+                        <tr>
+                            <td width="800" align="right">
+                                Дата выхода: {[{ GetDate(object.dates[0].date) }]}
+                                <br>
+                                {% if user.is_authenticated %}
+                                    <a href ng-click="AddItem(object.ean)" ng-if="check_comics(object)">Добавить</a>
+                                    <a href ng-click="DeleteItem(object.ean)" ng-if="!check_comics(object)">Удалить</a>
+                                    {% else %}
+                                    <a href="/auth/">Добавить</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    </body>
+</html>

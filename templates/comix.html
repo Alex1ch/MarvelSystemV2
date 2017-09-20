@@ -1,0 +1,33 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html ng-app="GetModel"  ng-controller="GetCtrl">
+    <head>
+        <title>{{ comix.name }}</title>
+        <link rel="icon" type="image/png" href="{% static 'favicon.ico' %}" />
+        <script type="text/javascript" src="{% static 'lib/angular.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'lib/angular-md5.js' %}"></script>
+        <script type="text/javascript" src="{% static 'GetController.js' %}"></script>
+        <link rel="stylesheet" href="{% static 'style.css' %}" />
+    </head>
+    <body>
+    <div align="middle"><h4>
+        <a href="{% url 'marvel' %}">Поиск</a> -
+        {% if user.is_authenticated %}<a href="{% url 'master' %}">Комиксы {{ user.username }}</a> -
+        <a href="/logout/">Выйти из аккаунта</a>{% else %}
+          <a href="/auth/">Войти в аккаунт</a>
+        {% endif %}
+        </h4>
+    </div>
+    <div align="middle">
+        <image height="500" src="{[{ Comic[0].thumbnail.path }]}/detail.{[{Comic[0].thumbnail.extension}]}"></image><br>
+        <br><br><h3>{[{ Comic[0].title }]}</h3><br><br>
+        <div class="desctext" align="left" >{[{  Comic[0].description }]}</div><br><br>
+        <div ng-if="Comic[0].ean.length>0">EAN: {[{ Comic[0].ean }]}<br><br></div>
+        <div ng-if="Comic[0].characters.available!=0" ><br>Персонажи: <br><div ng-repeat="character in Comic[0].characters.items track by $index">{[{ character.name }]}</div></div>
+    </div>
+    </body>
+</html>
+
+
+
