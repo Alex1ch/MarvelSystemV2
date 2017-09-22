@@ -5,6 +5,8 @@ from MarvelComixStore import forms,models
 from django.db.models import Q
 from rest_framework.renderers import JSONRenderer
 from django.contrib.auth import authenticate, login, logout
+import datetime
+import json
 
 # Create your views here.
 
@@ -87,18 +89,25 @@ def add(request,*args,**kwargs):
     if not request.user.is_authenticated():
         return HttpResponse('Not authenticated')
     user=request.user
-    ean=kwargs['ean']
     customer=models.Customer.objects.get(user=user)
-    customer.comixlist.add(models.Comic.objects.get(ean=ean))
+    id=kwargs['id']
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    Comic=models.Comic()
+    Comic.name=body['title']
+    Comic.description=body['description']
+    Comic.cover_url=body['cover_url']
+    Comic.marvel_id=body['marvel_id']
+    Comic.ean=body['ean']
+    Comic.characters=body['characters']
+    date_raw=body['date']
+    Comic.date = datetime.datetime(int(date_raw[:4]),int(date_raw[5:7]),int(date_raw[8:10]))
+    Comic.customer=customer
+    Comic.save()
     return HttpResponse('Added!')
 
 def delete(request,*args,**kwargs):
     if not request.user.is_authenticated():
         return HttpResponse('Not authenticated')
-    user=request.user
-    ean=kwargs['ean']
-    customer=models.Customer.objects.get(user=user)
-    comixlist=customer.comixlist.exclude(ean=ean)
-    customer.comixlist=comixlist
-    customer.save()
-    return HttpResponse('Deleted!')
+    models.Comic.objects.get(id=kwargs['id']).delete()
+    return HttpResponseRedirect('/master')

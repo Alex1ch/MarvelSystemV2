@@ -10,6 +10,10 @@ SearchModel.config(function($interpolateProvider) {
   $interpolateProvider.endSymbol('}]}');
 });
 
+SearchModel.config(['$locationProvider', function($locationProvider) {
+        $locationProvider.html5Mode(true).hashPrefix('*');
+    }]);
+
 SearchModel.controller('SearchCtrl',function ($scope, $http, md5) {
     $scope.formModel = new FormData();
 
@@ -34,6 +38,7 @@ SearchModel.controller('SearchCtrl',function ($scope, $http, md5) {
     $scope.offset=0;
 
     $scope.check_comics=function(object){
+        return true;//удали это
         for(i=0;i<$scope.added.length;i++) {
             if (object.ean.toString() == $scope.added[i]) {
                 return false;
@@ -45,6 +50,7 @@ SearchModel.controller('SearchCtrl',function ($scope, $http, md5) {
     $scope.ChangePage=function (page) {
         var DateVar=new Date();
 
+        $scope.thispage=page;
         $scope.searchkey=$scope.keywords;
 
         $scope.offset=20*($scope.thispage-1);
@@ -83,15 +89,33 @@ SearchModel.controller('SearchCtrl',function ($scope, $http, md5) {
         });
     };
 
-    $scope.AddItem=function (ean) {
-        $http( {method: 'GET', url: 'add/'+ean.toString()}).then(function (response) {
+    $scope.AddItem=function (object) {
+        var post_data_obj={
+            title:object.title,
+            description:object.description,
+            cover_url:object.thumbnail.path+'/detail.'+object.thumbnail.extension,
+            date:object.dates[0].date,
+            ean:object.ean,
+            marvel_id:object.id,
+            characters:object.characters.items
+        };
+
+        var post_data=JSON.stringify(post_data_obj)
+
+        var form=new FormData();
+        form.append('title',object.title);
+        form.append('description',object.description);
+        form.append('cover_url',object.thumbnail.path+'/detail.'+object.thumbnail.extension);
+
+
+        $http( {method: 'POST', url: 'add/'+object.id.toString(), enctype: undefined, data: post_data}).then(function (response) {
             getAdded();
         })
     };
 
 
-    $scope.DeleteItem=function (ean) {
-        $http( {method: 'GET', url: 'delete/'+ean.toString()}).then(function (response) {
+    $scope.DeleteItem=function (id) {
+        $http( {method: 'GET', url: 'delete/'+id.toString()}).then(function (response) {
             getAdded();
         })
     };
@@ -106,7 +130,7 @@ SearchModel.controller('SearchCtrl',function ($scope, $http, md5) {
     $scope.GetDate= function (str) {
         var date=new Date(str);
         date.getDate();
-        return date.getUTCDate()+"."+date.getUTCMonth()+"."+date.getUTCFullYear();
+        return date.getUTCDate()+"."+(date.getUTCMonth()+1).toString()+"."+date.getUTCFullYear();
     };
     
     $scope.OnSubmit=function () {

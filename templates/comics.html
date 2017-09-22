@@ -26,7 +26,7 @@
                 <table>
                     <tr>
                         <td>
-                            <img height="150" src="{{ single_comics.cover.url }}">
+                            <img height="150" src="{{ single_comics.cover_url }}">
                         </td>
                         <td width="800">
                             <a href="/marvel/{{ single_comics.ean}}">{{ single_comics.name }}</a><br>
@@ -40,6 +40,7 @@
                                     <td width="600" align="right">
                                         Дата выхода: {{ single_comics.date }}
                                         <br>
+                                        <a href="/delete/{{ single_comics.id }}">Удалить</a>
                                     </td>
                                 </tr>
                             </table>

@@ -11,6 +11,7 @@ class Customer(models.Model):
         return self.user.username.__str__()
 
 class Comic(models.Model):
+    marvel_id=models.IntegerField(default=0)
     name = models.CharField(max_length=100, verbose_name="Имя")
     description = models.TextField(verbose_name="Описание")
     date = models.DateField(default=timezone.now,db_index=True,editable=True, verbose_name="Дата выхода")
@@ -34,7 +35,7 @@ class Comic(models.Model):
         return self.date.year.numerator;
 
     def __str__(self):
-        return self.name;
+        return self.name+" ("+str(self.id)+")";
 
 
 

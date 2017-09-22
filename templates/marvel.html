@@ -52,8 +52,8 @@
                                 Дата выхода: {[{ GetDate(object.dates[0].date) }]}
                                 <br>
                                 {% if user.is_authenticated %}
-                                    <a href ng-click="AddItem(object.ean)" ng-if="check_comics(object)">Добавить</a>
-                                    <a href ng-click="DeleteItem(object.ean)" ng-if="!check_comics(object)">Удалить</a>
+                                    <a href ng-click="AddItem(object)" ng-if="check_comics(object)">Добавить</a>
+                                    <a href ng-if="!check_comics(object)">Удалить</a>
                                     {% else %}
                                     <a href="/auth/">Добавить</a>
                                 {% endif %}

@@ -9,8 +9,8 @@ urlpatterns = [
     url(r'^get_added',views.get_added),
     url(r'^auth',auth_views.login, {'template_name': 'auth.html'}, name='login'),
     url(r'^logout',auth_views.logout,{'next_page': '/marvel'}),
-    url(r'^add/(?P<ean>[0-9]{13})',views.add),
-    url(r'^delete/(?P<ean>[0-9]{13})',views.delete),
+    url(r'^add/(?P<id>[0-9]+)',views.add),
+    url(r'^delete/(?P<id>[0-9]+)',views.delete),
     url(r'^master',views.Master.as_view(), name='master')
     #url(r'^',views.Index.as_view()),
 
