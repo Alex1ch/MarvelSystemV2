@@ -117,6 +117,8 @@ class Modify(DetailView):
         if request.user.is_authenticated():
             id=kwargs['id']
             comic=get_object_or_404(models.Comic,id=id)
+            if comic.customer.user!=request.user:
+                return HttpResponseRedirect(redirect_to='/master')
             date=comic.date.year.__str__()+'-'+comic.date.month.__str__()+'-'+comic.date.day.__str__()
             return render(request,'modify.html',{'comic':comic, 'date':date})
         else:
@@ -124,6 +126,8 @@ class Modify(DetailView):
 
     def post(self, request, **kwargs):
         comic=models.Comic.objects.get(id=kwargs['id'])
+        if comic.customer.user!=request.user:
+            return HttpResponseRedirect(redirect_to='/master')
         comic.marvel_id=request.POST['marvel_id']
         comic.name=request.POST['name']
         comic.description=request.POST['description']
