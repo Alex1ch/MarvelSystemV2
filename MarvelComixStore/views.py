@@ -111,3 +111,26 @@ def delete(request,*args,**kwargs):
         return HttpResponse('Not authenticated')
     models.Comic.objects.get(id=kwargs['id']).delete()
     return HttpResponseRedirect('/master')
+
+class Modify(DetailView):
+    def get(self,request,**kwargs):
+        if request.user.is_authenticated():
+            id=kwargs['id']
+            comic=get_object_or_404(models.Comic,id=id)
+            date=comic.date.year.__str__()+'-'+comic.date.month.__str__()+'-'+comic.date.day.__str__()
+            return render(request,'modify.html',{'comic':comic, 'date':date})
+        else:
+            return HttpResponseRedirect(redirect_to='/auth')
+
+    def post(self, request, **kwargs):
+        comic=models.Comic.objects.get(id=kwargs['id'])
+        comic.marvel_id=request.POST['marvel_id']
+        comic.name=request.POST['name']
+        comic.description=request.POST['description']
+        comic.characters=request.POST['characters']
+        comic.ean=request.POST['ean']
+        comic.cover_url=request.POST['cover_url']
+        date=request.POST['date'].split('-')
+        comic.date=datetime.datetime(year=int(date[0]),month=int(date[1]),day=int(date[2]))
+        comic.save()
+        return HttpResponseRedirect(redirect_to='/master')

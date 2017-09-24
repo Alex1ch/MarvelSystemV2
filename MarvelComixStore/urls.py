@@ -11,7 +11,7 @@ urlpatterns = [
     url(r'^logout',auth_views.logout,{'next_page': '/marvel'}),
     url(r'^add/(?P<id>[0-9]+)',views.add),
     url(r'^delete/(?P<id>[0-9]+)',views.delete),
-    url(r'^master',views.Master.as_view(), name='master')
-    #url(r'^',views.Index.as_view()),
+    url(r'^master',views.Master.as_view(), name='master'),
+    url(r'^modify/(?P<id>[0-9]+)',views.Modify.as_view())
 
 ]

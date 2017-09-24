@@ -1,4 +1,4 @@
-from django.forms import Form
+from django.forms import Form, ModelForm
 from django import forms
 from django.utils import timezone
 from MarvelComixStore.models import Comic

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div align="middle">
+    <form method="post" >
+        {% csrf_token %}
+        <label>Marvel id: </label><input type="number" value="{{ comic.marvel_id }}" name="marvel_id"><br><br>
+        <label>Имя: </label><input type="text" value="{{ comic.name }}" name="name"><br><br>
+        <label>Описание: </label><textarea name="description" cols="40" rows="10">{{ comic.description }}</textarea><br><br>
+        <label>Дата выхода: </label><input type="datetime" name="date" value="{{ date }}"><br><br>
+        <label>EAN: </label><input type="text" name="ean" value="{{ comic.ean }}"><br><br>
+        <label>URL обложки: </label><input type="text" name="cover_url" value="{{ comic.cover_url }}"><br><br>
+        <label>Персонажи: </label><textarea name="characters" cols="40" rows="10">{{ comic.characters }}</textarea><br><br>
+        <input type="submit" value="Изменить">
+    </form>
+</div>
+</body>
+</html>
