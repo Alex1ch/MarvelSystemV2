@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^add/(?P<id>[0-9]+)',views.add),
     url(r'^delete/(?P<id>[0-9]+)',views.delete),
     url(r'^master',views.Master.as_view(), name='master'),
-    url(r'^modify/(?P<id>[0-9]+)',views.Modify.as_view())
-
+    url(r'^modify/(?P<id>[0-9]+)',views.Modify.as_view()),
+    url(r'^getUserComics/(?P<username>\w+)',views.getUserComics),
+    url(r'^getMasterComics/', views.getMasterComics)
 ]

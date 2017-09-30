@@ -1,16 +1,18 @@
 {% load staticfiles %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="MasterModel">
 <head>
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="{% static 'favicon.ico' %}" />
     <link rel="stylesheet" href="{% static 'style.css' %}" />
+    <script type="text/javascript" src="{% static 'lib/angular.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'MasterController.js' %}"></script>
     <title>
         {{ user.username }} - Список комиксов
     </title>
 </head>
-    <body>
+    <body ng-controller="MasterCtrl">
     <div align="middle"><h4>
         <a href="{% url 'marvel' %}">Поиск</a> -
         {% if authuser.is_authenticated %}<a href="{% url 'master' %}">Комиксы {{ authuser.username }}</a> -
@@ -22,32 +24,28 @@
 
     <div class="searchform">
             <h1 align="middle">Список комиксов - {{ user.username }}</h1>
-            {% for single_comics in comics %}
+            <div ng-repeat="comic in Comics track by $index">
                 <table>
                     <tr>
                         <td>
-                            <img height="150" src="{{ single_comics.cover_url }}">
+                            <img height="150" src="{[{ comic.cover_url }]}">
                         </td>
                         <td width="800">
-                            <a href="/modify/{{ single_comics.id}}">{{ single_comics.name }}</a><br>
-                            {{ single_comics.getShortDesc }}
+                            <a href="/modify/{[{ comic.id}]}">{[{ comic.name }]}</a><br>
+                            {[{ comic.description }]}
                             <table>
                                 <tr>
-                                    <td width="200">
-                                        Теги:
-
-                                    </td>
                                     <td width="600" align="right">
-                                        Дата выхода: {{ single_comics.date }}
+                                        Дата выхода: {[{ comic.date }]}
                                         <br>
-                                        <a href="/delete/{{ single_comics.id }}">Удалить</a>
+                                        <a href ng-click="delete(comic.id)" ng-if="CheckMaster()">Удалить</a>
                                     </td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
                 </table>
-            {% endfor %}
+            </div>
     </div>
     </body>
 </html>

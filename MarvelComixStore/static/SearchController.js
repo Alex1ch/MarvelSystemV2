@@ -81,13 +81,6 @@ SearchModel.controller('SearchCtrl',function ($scope, $http, md5) {
         $scope.OnSubmit();
     };
 
-    var getAdded=function () {
-
-        $http({method:'GET',url:'/get_added/'}).then(function (response) {
-            $scope.added=response.data.toString().split('\n');
-            console.log($scope.added)
-        });
-    };
 
     $scope.AddItem=function (object) {
         var post_data_obj={

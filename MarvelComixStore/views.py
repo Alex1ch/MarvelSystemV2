@@ -16,27 +16,6 @@ class Search(DetailView):
         user=request.user
         models.Comic.objects.first().__str__()
         return render(request,'marvel.html',{'form':form, 'user':user})
-    def post(self,request):
-        Comixes=models.Comic.objects.all()
-        form=forms.searchForm(request.POST)
-
-        if form.is_valid():
-            keywords_str=form.cleaned_data.get('keywords',None)
-            year = form.cleaned_data.get('year',None)
-            keywords=keywords_str.split(' ')
-            for keyword in keywords:
-                Comixes=Comixes.filter(Q(Q(name__icontains=keyword)|Q(description__icontains=keyword)|Q(tags__name__icontains=keyword))).distinct()
-            if year!='0':
-                print('111')
-                Comixes =Comixes.filter(date__year=int(year))
-
-            SerializerList=[models.ComixSerializer(item) for item in Comixes]
-            separator="\|/"
-            output = (JSONRenderer().render(serializer.data)+separator.encode('ascii') for serializer in SerializerList)
-
-            return HttpResponse(output)
-        else:
-            return HttpResponse("Oooops")
 
 class Comics(DetailView):
     def get(self,request,*args,**kwargs):
@@ -51,8 +30,6 @@ class Comics(DetailView):
 
 class Master(DetailView):
     def get(self,request,*args,**kwargs):
-        #comixes=models.Comix.objects.all()
-        #comixes.filter(cus)
         if request.user.is_authenticated():
             customer = models.Customer.objects.get(user=request.user)
             comics=models.Comic.objects.filter(customer=customer)
@@ -90,7 +67,6 @@ def add(request,*args,**kwargs):
         return HttpResponse('Not authenticated')
     user=request.user
     customer=models.Customer.objects.get(user=user)
-    id=kwargs['id']
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
     Comic=models.Comic()
@@ -109,7 +85,10 @@ def add(request,*args,**kwargs):
 def delete(request,*args,**kwargs):
     if not request.user.is_authenticated():
         return HttpResponse('Not authenticated')
-    models.Comic.objects.get(id=kwargs['id']).delete()
+    comic=models.Comic.objects.get(id=kwargs['id'])
+    if not request.user==comic.customer.user:
+        return HttpResponse("You haven't permission to do that!!!")
+    comic.delete()
     return HttpResponseRedirect('/master')
 
 class Modify(DetailView):
@@ -138,3 +117,34 @@ class Modify(DetailView):
         comic.date=datetime.datetime(year=int(date[0]),month=int(date[1]),day=int(date[2]))
         comic.save()
         return HttpResponseRedirect(redirect_to='/master')
+
+
+def getUserComics(request,**kwargs):
+    if not request.user.is_authenticated():
+        return HttpResponse('{"massage":"Error, user is not authenticated!","results":[]}')
+    customer=models.Customer.objects.get(user__username=kwargs['username'])
+    comics=models.Comic.objects.filter(customer=customer)
+    #print(comics)
+    if comics.count()==0:
+        return HttpResponse('{"massage":"Здесь пока нет комиксов...","results":[]}')
+    output=b'{"results":['
+    for comic in comics:
+        output+=JSONRenderer().render(models.ComixSerializer(comic).data) + b","
+    output=output[:-1]
+    output+=b"]}"
+    return HttpResponse(output)
+
+def getMasterComics(request):
+    if not request.user.is_authenticated():
+        return HttpResponse('{"massage":"Error, user is not authenticated!","results":[]}')
+    customer=models.Customer.objects.get(user=request.user)
+    comics=models.Comic.objects.filter(customer=customer)
+    #print(comics)
+    if comics.count()==0:
+        return HttpResponse('{"massage":"Здесь пока нет комиксов...","results":[]}')
+    output=b'{"results":['
+    for comic in comics:
+        output+=JSONRenderer().render(models.ComixSerializer(comic).data) + b","
+    output=output[:-1]
+    output+=b"]}"
+    return HttpResponse(output)
